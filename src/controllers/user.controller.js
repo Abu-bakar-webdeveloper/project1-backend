@@ -6,4 +6,4 @@ const registerUser = asyncHandler( (req, res) => {
     })
 })
 
-export {registerUser}
+export { registerUser }
