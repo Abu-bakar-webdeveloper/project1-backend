@@ -6,7 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser = asyncHandler( async (req, res) => {
     const {fullname, email, password, username} = req.body
-    console.log("email", email);
+    // console.log("email", email);
 
     if(
         [fullname, email, password, username].some((field) => field.trim() === "")
@@ -23,7 +23,12 @@ const registerUser = asyncHandler( async (req, res) => {
     }
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const CoverImageLocalPath = req.files?.coverImage[0]?.path;
+    // const CoverImageLocalPath = req.files?.coverImage[0]?.path;
+
+    let CoverImageLocalPath;
+    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
+        CoverImageLocalPath = req.files.coverImage[0].path;
+    }
 
     if(!avatarLocalPath) {
         throw new ApiError(400, "avatar is required")
@@ -59,4 +64,23 @@ const registerUser = asyncHandler( async (req, res) => {
     )
 })
 
-export { registerUser }
+const loginUser = asyncHandler( async (req, res) => {
+    const {email, username, password} = req.body
+
+    if(!email || !username){
+        throw new ApiError(400, "email or username is required")
+    }
+
+    const user = await User.findOne({
+        $or: [{username}, {email}]
+})
+
+    if(!user){
+        throw new ApiError(404, "User does not exist")
+    }
+})
+
+export { 
+    registerUser,
+    loginUser
+ }
